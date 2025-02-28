@@ -1,6 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
+using UnityEngine;
+using System.Collections.Generic;
+
 public static class UIHelper
 {
     private static float referenceWidth = 1920f;
@@ -26,6 +29,7 @@ public static class UIHelper
                 Title = title,
                 IsVisible = isVisible
             };
+            if (Main.DebugLogging) ModLogger.LogInfo($"Window Registered: {title} (ID: {id})");
         }
     }
 
@@ -34,16 +38,42 @@ public static class UIHelper
     /// </summary>
     public static void DrawMenu()
     {
-        if (registeredWindows.ContainsKey(0))
+        if (!registeredWindows.ContainsKey(0))
         {
-            // Ensure visibility is up-to-date
-            registeredWindows[0].IsVisible = MainMenuUI.IsVisible;
-
-            if (registeredWindows[0].IsVisible)
-            {
-                registeredWindows[0].WindowRect = CreateWindow(0, registeredWindows[0].WindowRect, registeredWindows[0].WindowFunction, registeredWindows[0].Title);
-            }
+            if (Main.DebugLogging) ModLogger.LogError("Main Menu Window is not registered!");
+            return;
         }
+
+        // Ensure visibility is updated before rendering
+        registeredWindows[0].IsVisible = MainMenuUI.IsVisible;
+
+        if (registeredWindows[0].IsVisible)
+        {
+            if (Main.DebugLogging) ModLogger.LogInfo("Drawing Main Menu UI...");
+
+            // Ensure the window is within screen bounds
+            registeredWindows[0].WindowRect = ValidateWindowPosition(registeredWindows[0].WindowRect);
+
+            registeredWindows[0].WindowRect = CreateWindow(0, registeredWindows[0].WindowRect, registeredWindows[0].WindowFunction, registeredWindows[0].Title);
+        }
+    }
+
+    /// <summary>
+    /// Prevents windows from going off-screen.
+    /// </summary>
+    private static Rect ValidateWindowPosition(Rect windowRect)
+    {
+        if (windowRect.x < 0 || windowRect.x > Screen.width - 50)
+        {
+            if (Main.DebugLogging) ModLogger.LogWarning($"Window repositioned from X={windowRect.x} to X=50");
+            windowRect.x = 50;
+        }
+        if (windowRect.y < 0 || windowRect.y > Screen.height - 50)
+        {
+            if (Main.DebugLogging) ModLogger.LogWarning($"Window repositioned from Y={windowRect.y} to Y=50");
+            windowRect.y = 50;
+        }
+        return windowRect;
     }
 
     public static Rect CreateWindow(int id, Rect windowRect, GUI.WindowFunction windowFunction, string title)
@@ -53,11 +83,12 @@ public static class UIHelper
         Matrix4x4 originalMatrix = GUI.matrix;
         GUI.matrix = Matrix4x4.TRS(Vector3.zero, Quaternion.identity, new Vector3(scaleX, scaleY, 1));
 
-        windowRect.x = Mathf.Clamp(windowRect.x, 0, referenceWidth - windowRect.width);
-        windowRect.y = Mathf.Clamp(windowRect.y, 0, referenceHeight - windowRect.height);
         windowRect = GUILayout.Window(id, windowRect, windowFunction, title);
 
         GUI.matrix = originalMatrix;
+
+        if (Main.DebugLogging) ModLogger.LogInfo($"Created Window: {title} (ID: {id}) at X={windowRect.x}, Y={windowRect.y}");
+
         return windowRect;
     }
 
@@ -79,6 +110,8 @@ public static class UIHelper
                 padding = new RectOffset(10, 10, 10, 10),
                 margin = new RectOffset(10, 10, 10, 10)
             };
+
+            if (Main.DebugLogging) ModLogger.LogInfo("Initialized UI Styles");
         }
     }
 
@@ -94,6 +127,8 @@ public static class UIHelper
         public bool IsVisible;
     }
 }
+
+
 public class MainMenuUI
 {
     private static Rect mainMenuRect = new Rect(Screen.width - 250, 50, 250, 300);
