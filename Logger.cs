@@ -1,5 +1,4 @@
 ﻿using BepInEx.Logging;
-using UnityEngine; // Needed for rich text colors
 
 public static class ModLogger
 {
@@ -8,19 +7,21 @@ public static class ModLogger
 
     public static void LogInfo(string message)
     {
-        string coloredMessage = $"<color={Main.LogInfoColor}>{Prefix}{message}</color>";
-        logger.LogInfo(coloredMessage);
+        logger.LogInfo(Prefix + message); // ✅ Uses BepInEx's default coloring for Info
     }
 
     public static void LogWarning(string message)
     {
-        string coloredMessage = $"<color={Main.LogWarningColor}>{Prefix}{message}</color>";
-        logger.LogWarning(coloredMessage);
+        logger.LogWarning(Prefix + message); // ✅ Yellow color for warnings
     }
 
     public static void LogError(string message)
     {
-        string coloredMessage = $"<color={Main.LogErrorColor}>{Prefix}{message}</color>";
-        logger.LogError(coloredMessage);
+        logger.LogError(Prefix + message); // ✅ Red color for errors
+    }
+
+    public static void LogDebug(string message)
+    {
+        logger.LogDebug(Prefix + message); // ✅ Debug mode (blue if enabled)
     }
 }

@@ -29,9 +29,14 @@ public static class UIHelper
                 Title = title,
                 IsVisible = isVisible
             };
-            if (Main.DebugLogging) ModLogger.LogInfo($"Window Registered: {title} (ID: {id})");
+            if (Main.DebugLogging) ModLogger.LogInfo($"✅ Window Registered: {title} (ID: {id})");
+        }
+        else
+        {
+            if (Main.DebugLogging) ModLogger.LogWarning($"⚠️ Window ID {id} already registered! Skipping.");
         }
     }
+
 
     /// <summary>
     /// Draws only the Main Menu UI.
@@ -40,23 +45,24 @@ public static class UIHelper
     {
         if (!registeredWindows.ContainsKey(0))
         {
-            if (Main.DebugLogging) ModLogger.LogError("Main Menu Window is not registered!");
+            if (Main.DebugLogging) ModLogger.LogError("❌ Main Menu Window is NOT registered! Cannot render.");
             return;
         }
 
-        // Ensure visibility is updated before rendering
+        // Ensure visibility is up-to-date
         registeredWindows[0].IsVisible = MainMenuUI.IsVisible;
 
-        if (registeredWindows[0].IsVisible)
+        if (!registeredWindows[0].IsVisible)
         {
-            if (Main.DebugLogging) ModLogger.LogInfo("Drawing Main Menu UI...");
-
-            // Ensure the window is within screen bounds
-            registeredWindows[0].WindowRect = ValidateWindowPosition(registeredWindows[0].WindowRect);
-
-            registeredWindows[0].WindowRect = CreateWindow(0, registeredWindows[0].WindowRect, registeredWindows[0].WindowFunction, registeredWindows[0].Title);
+            if (Main.DebugLogging) ModLogger.LogWarning("⚠️ Main Menu is set to NOT visible. Skipping render.");
+            return;
         }
+
+        if (Main.DebugLogging) ModLogger.LogInfo("✅ Drawing Main Menu UI...");
+
+        registeredWindows[0].WindowRect = CreateWindow(0, registeredWindows[0].WindowRect, registeredWindows[0].WindowFunction, registeredWindows[0].Title);
     }
+
 
     /// <summary>
     /// Prevents windows from going off-screen.
@@ -132,11 +138,12 @@ public static class UIHelper
 public class MainMenuUI
 {
     private static Rect mainMenuRect = new Rect(Screen.width - 250, 50, 250, 300);
-    public static bool IsVisible = true;
+    public static bool IsVisible = true; // 🔹 Ensure it's set to TRUE on startup
 
     public static void RegisterWindows()
     {
         UIHelper.RegisterWindow(0, ref mainMenuRect, MainMenuWindow, "Main Menu", ref IsVisible);
+        if (Main.DebugLogging) ModLogger.LogInfo("✅ Main Menu Window Registered");
     }
 
     public static void Draw() => UIHelper.DrawMenu();
@@ -148,11 +155,14 @@ public class MainMenuUI
 
         GUILayout.BeginVertical(UIHelper.GetSectionStyle());
 
-        GUILayout.Label("Main Menu Template");
+        GUILayout.Label("🔹 Main Menu Template");
 
         GUILayout.EndVertical();
+
+        if (Main.DebugLogging) ModLogger.LogInfo("✅ Main Menu Window Rendered");
     }
 }
+
 
 /*
 public class SecondaryMenuUI

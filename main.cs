@@ -14,9 +14,6 @@ public class Main : BaseUnityPlugin
 {
     private Harmony harmony;
     public static bool DebugLogging = true; // ✅ Toggle this to enable/disable logging
-    public static string LogInfoColor = "cyan"; // 🎨 Change Info log color
-    public static string LogWarningColor = "orange"; // 🎨 Change Warning log color
-    public static string LogErrorColor = "red"; // 🎨 Change Error log color
 
     void Awake()
     {
@@ -38,6 +35,8 @@ public class Main : BaseUnityPlugin
 
     void OnGUI()
     {
+        if (Main.DebugLogging) ModLogger.LogInfo("OnGUI() called - Attempting to draw UI");
         UIHelper.DrawMenu();
     }
+
 }
