@@ -118,28 +118,3 @@ public class MainMenuUI
         GUILayout.EndVertical();
     }
 }
-
-/*
-public class SecondaryMenuUI
-{
-    private static Rect secondaryMenuRect = new Rect(Screen.width - 500, 100, 250, 200);
-    public static bool IsVisible = false;
-
-    public static void RegisterWindows()
-    {
-        UIHelper.RegisterWindow(1, ref secondaryMenuRect, SecondaryMenuWindow, "Secondary Menu", ref IsVisible);
-    }
-
-    private static void SecondaryMenuWindow(int windowID)
-    {
-        UIHelper.InitializeStyles();
-        GUI.DragWindow(new Rect(0, 0, 10000, 20));
-
-        GUILayout.BeginVertical(UIHelper.GetSectionStyle());
-
-        GUILayout.Label("Secondary Menu Placeholder");
-
-        GUILayout.EndVertical();
-    }
-}
-*/
